@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BEINTER POS V5.2 - ระบบบริหารร้านแว่นตา</title>
+  <title>BEINTER POS V5.2</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js สำหรับวาดแผนภูมิวงกลมและกราฟแท่ง -->
@@ -448,7 +448,7 @@
   </main>
 
   <script>
-     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwxE_0xbCxKdoZSVJ488hItPqY8y-guw5DFOdNhUt99I2RdINiVWdwkranbclEbxK-L/exec';
+    const DEFAULT_GAS_URL = '';
 
     const defaultProducts = [
       { id: 1, sku: 'TM-101', brand: 'TONI MORGAN', name: 'Titanium ทรงกลม สีทอง 49-20', category: 'กรอบแว่นสายตา', cost: 850, price: 2290, qty: 8, addedDate: '2026-01-10' },
@@ -529,7 +529,19 @@
       renderAll();
     }
 
-
+    function parseCustomDate(dateStr) {
+      if (!dateStr) return new Date();
+      if (dateStr instanceof Date) return dateStr;
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) return d;
+      const parts = String(dateStr).split(/[\/\s,:]+/);
+      if (parts.length >= 3) {
+        let year = parseInt(parts[2]);
+        if (year > 2400) year -= 543;
+        return new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]));
+      }
+      return new Date();
+    }
 
     // ==========================================
     // Cloud Sync (พร้อม Cache-Buster & Auto-Sync)
@@ -551,7 +563,7 @@
       loadFromGoogleSheets(true);
     }
 
-   // 🚀 ฟังก์ชันดึงข้อมูลจาก Cloud (ตัด Headers ที่ทำให้เกิด Preflight ออก)
+    // 🚀 ฟังก์ชันดึงข้อมูลจาก Cloud พร้อมทำลาย Cache ให้ได้ข้อมูลสดใหม่เสมอ
     async function loadFromGoogleSheets(showNotification = false) {
       if (!SCRIPT_URL || isFetchingFromCloud) return;
       isFetchingFromCloud = true;
@@ -561,13 +573,21 @@
       }
 
       try {
-        // ใช้ Query Parameter _t เพื่อป้องกันแคช โดยไม่ต้องส่ง Custom Headers
+        // แปะ timestamp ต่อท้าย URL เพื่อบังคับให้ไม่ใช้แคชเดิม
         const cacheBusterUrl = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
         
-        const res = await fetch(cacheBusterUrl);
+        const res = await fetch(cacheBusterUrl, {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache'
+          }
+        });
 
         const data = await res.json();
         if (data.status === 'success') {
+          // หากใน Sheet มีการเพิ่มแถวสินค้าใหม่แต่ลืมใส่ ID ให้สร้างให้อัตโนมัติ
           if (data.products && Array.isArray(data.products)) {
             products = data.products.map((p, idx) => ({
               ...p,
@@ -592,7 +612,7 @@
         isFetchingFromCloud = false;
       }
     }
-   
+
     // ฟังก์ชันส่งข้อมูลขึ้น Google Sheets
     async function syncToGoogleSheets() {
       if (!SCRIPT_URL) return;
@@ -1054,23 +1074,14 @@
       `).join('');
     }
 
-  function renderOldStock() {
+    function renderOldStock() {
       const now = new Date();
-      // ตัดเวลาออก ให้เริ่มนับเวลาเที่ยงคืนของวันนี้
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      
       const inStockProducts = products.filter(p => Number(p.qty) > 0);
 
       const mapped = inStockProducts.map(p => {
-        const added = parseCustomDate(p.addedDate);
-        let diffDays = 0;
-        
-        if (added) {
-          const addedDateOnly = new Date(added.getFullYear(), added.getMonth(), added.getDate());
-          const diffMs = today - addedDateOnly;
-          diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
-        }
-        
+        const added = parseCustomDate(p.addedDate || new Date());
+        const diffMs = now - added;
+        const diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
         const deadCost = (Number(p.cost) || 0) * (Number(p.qty) || 0);
         return { ...p, daysInStock: diffDays, deadCost };
       });
