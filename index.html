@@ -1345,25 +1345,38 @@
       loadFromGoogleSheets();
     }
 
-    async function loadFromGoogleSheets() {
-      if (!SCRIPT_URL) return;
-      updateSyncStatus('กำลังดึงข้อมูลจาก Google Sheets...', 'กรุณารอสักครู่', 'bg-blue-500 animate-pulse');
-      try {
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-        if (data.status === 'success') {
-          if (data.products && data.products.length > 0) products = data.products;
-          if (data.sales && data.sales.length > 0) sales = data.sales;
-          localStorage.setItem('optical_products', JSON.stringify(products));
-          localStorage.setItem('optical_sales', JSON.stringify(sales));
-          renderAll();
-          updateSyncStatus('เชื่อมต่อ Google Sheets สำเร็จ', 'อัปเดตล่าสุดเมื่อ ' + new Date().toLocaleTimeString('th-TH'), 'bg-emerald-500');
-        }
-      } catch (err) {
-        updateSyncStatus('ทำงานโหมดออฟไลน์ (Local)', 'ไม่สามารถเชื่อมต่อ Cloud ได้', 'bg-amber-500');
-        renderAll();
+   // ดึงข้อมูลจาก Google Sheets (แก้ปัญหาติดแคช)
+async function loadFromGoogleSheets() {
+  if (!SCRIPT_URL) return;
+  updateSyncStatus('กำลังดึงข้อมูลจาก Google Sheets...', 'กรุณารอสักครู่', 'bg-blue-500 animate-pulse');
+  try {
+    // เติม ?t=Date.now() เพื่อบังคับให้ดึงข้อมูลใหม่เสมอ ไม่จำแคชเดิม
+    const cleanUrl = SCRIPT_URL.split('?')[0];
+    const fetchUrl = `${cleanUrl}?t=${Date.now()}`;
+
+    const res = await fetch(fetchUrl, {
+      method: 'GET',
+      cache: 'no-store' // สั่งเบราว์เซอร์ไม่ให้บันทึกหรือดึงจากแคช
+    });
+    
+    const data = await res.json();
+    if (data.status === 'success') {
+      if (data.products && data.products.length > 0) {
+        products = data.products;
       }
+      if (data.sales && data.sales.length > 0) {
+        sales = data.sales;
+      }
+      localStorage.setItem('optical_products', JSON.stringify(products));
+      localStorage.setItem('optical_sales', JSON.stringify(sales));
+      renderAll();
+      updateSyncStatus('เชื่อมต่อ Google Sheets สำเร็จ', 'อัปเดตล่าสุดเมื่อ ' + new Date().toLocaleTimeString('th-TH'), 'bg-emerald-500');
     }
+  } catch (err) {
+    updateSyncStatus('ทำงานโหมดออฟไลน์ (Local)', 'ไม่สามารถเชื่อมต่อ Cloud ได้', 'bg-amber-500');
+    renderAll();
+  }
+}
 
     async function syncToGoogleSheets() {
       if (!SCRIPT_URL) return;
