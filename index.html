@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BEINTER POS V7</title>
+  <title>BE Optical V7.1 - ระบบบริหารร้านแว่นตา</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js สำหรับวาดแผนภูมิวงกลมและกราฟแท่ง -->
@@ -20,24 +20,57 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
+  <!-- ========================================== -->
+  <!-- หน้าจอล็อกอินรักษาความปลอดภัย (Login Overlay) -->
+  <!-- ========================================== -->
+  <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-md px-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-sm text-center border border-slate-100">
+      <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
+        👓
+      </div>
+      <h2 class="text-xl font-bold text-slate-900">OPSD </h2>
+      <p class="text-xs text-slate-500 mt-1 mb-6">ระบบบริหารสต๊อกและงานขาย (กรุณากรอกรหัส PIN)</p>
+
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label for="login-pin" class="block text-xs font-semibold text-slate-600 text-left mb-1.5">รหัสผ่าน / PIN เข้าระบบ</label>
+          <input type="password" id="login-pin" maxlength="12" required autofocus placeholder="กรอกรหัส PIN (เริ่มต้น: 8888)" class="w-full px-4 py-3 text-center text-lg font-bold tracking-widest border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+        </div>
+
+        <p id="login-error" class="text-xs text-red-500 font-medium hidden">⚠️ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-md transition duration-200">
+          เข้าสู่ระบบ
+        </button>
+      </form>
+      <p class="text-[11px] text-slate-400 mt-6">ระบบเข้ารหัสและป้องกันการเข้าถึงข้อมูลต้นทุนหน้าร้าน</p>
+    </div>
+  </div>
+
   <!-- แถบเมนูด้านบน (Header) -->
   <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center h-16">
       <div class="flex items-center space-x-3">
         <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-lg shadow-sm">👓</div>
         <div>
-          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BEINTER POS V7</h1>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BE Optical V7.1 </h1>
           <p class="text-xs text-slate-500">ระบบบริหารสต๊อก วิเคราะห์ต้นทุน และงานขายหน้าร้าน</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex space-x-2 sm:space-x-6 h-full items-center overflow-x-auto">
-        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="h-full px-2 tab-active text-sm whitespace-nowrap">📊 แดชบอร์ดวิเคราะห์</button>
-        <button onclick="switchTab('pos')" id="tab-pos" class="h-full px-2 text-slate-600 hover:text-slate-900 text-sm whitespace-nowrap">🛒 เปิดบิลขาย (POS)</button>
-        <button onclick="switchTab('inventory')" id="tab-inventory" class="h-full px-2 text-slate-600 hover:text-slate-900 text-sm whitespace-nowrap">📦 สต๊อกสินค้า</button>
-        <button onclick="switchTab('history')" id="tab-history" class="h-full px-2 text-slate-600 hover:text-slate-900 text-sm whitespace-nowrap">📑 ประวัติการขาย</button>
-      </nav>
+      <!-- Navigation Tabs & ปุ่ม Logout -->
+      <div class="flex items-center space-x-4">
+        <nav class="flex space-x-2 sm:space-x-4 h-full items-center overflow-x-auto">
+          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="h-16 px-2 tab-active text-sm whitespace-nowrap">📊 แดชบอร์ดวิเคราะห์</button>
+          <button onclick="switchTab('pos')" id="tab-pos" class="h-16 px-2 text-slate-600 hover:text-slate-900 text-sm whitespace-nowrap">🛒 เปิดบิลขาย (POS)</button>
+          <button onclick="switchTab('inventory')" id="tab-inventory" class="h-16 px-2 text-slate-600 hover:text-slate-900 text-sm whitespace-nowrap">📦 สต๊อกสินค้า</button>
+          <button onclick="switchTab('history')" id="tab-history" class="h-16 px-2 text-slate-600 hover:text-slate-900 text-sm whitespace-nowrap">📑 ประวัติการขาย</button>
+        </nav>
+        
+        <button onclick="handleLogout()" title="ออกจากระบบ" class="px-2.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg font-medium transition flex items-center gap-1 whitespace-nowrap">
+          <span>🔒</span> ออกจากระบบ
+        </button>
+      </div>
     </div>
   </header>
 
@@ -142,7 +175,7 @@
           </div>
         </div>
 
-        <!-- 2) กราฟสัดส่วนยอดขายจริงตามแบรนด์ (ปรับปรุงใหม่ตามที่ต้องการ) -->
+        <!-- 2) กราฟสัดส่วนยอดขายจริงตามแบรนด์ -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
@@ -458,6 +491,11 @@
   </main>
 
   <script>
+    // ==========================================
+    // รหัสผ่านระบบ (PIN Code)
+    // ==========================================
+    const SYSTEM_PIN = '3211!@#'; // สามารถเปลี่ยนรหัสผ่านเริ่มต้นที่นี่
+
     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwxE_0xbCxKdoZSVJ488hItPqY8y-guw5DFOdNhUt99I2RdINiVWdwkranbclEbxK-L/exec';
 
     const defaultProducts = [
@@ -505,7 +543,49 @@
       '#06b6d4', '#f97316', '#64748b', '#84cc16', '#a855f7'
     ];
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // ==========================================
+    // ฟังก์ชันจัดการระบบล็อกอิน (Login / Logout)
+    // ==========================================
+    function checkLoginStatus() {
+      const isAuth = sessionStorage.getItem('optical_pos_auth') === 'true';
+      const overlay = document.getElementById('login-overlay');
+      if (isAuth) {
+        overlay.classList.add('hidden');
+        initializeApp();
+      } else {
+        overlay.classList.remove('hidden');
+        document.getElementById('login-pin').value = '';
+        document.getElementById('login-pin').focus();
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const enteredPin = document.getElementById('login-pin').value.trim();
+      const errorMsg = document.getElementById('login-error');
+
+      if (enteredPin === SYSTEM_PIN) {
+        errorMsg.classList.add('hidden');
+        sessionStorage.setItem('optical_pos_auth', 'true');
+        document.getElementById('login-overlay').classList.add('hidden');
+        initializeApp();
+      } else {
+        errorMsg.classList.remove('hidden');
+        document.getElementById('login-pin').value = '';
+        document.getElementById('login-pin').focus();
+      }
+    }
+
+    function handleLogout() {
+      if (confirm('ต้องการออกจากระบบและล็อกหน้าจอใช่หรือไม่?')) {
+        sessionStorage.removeItem('optical_pos_auth');
+        document.getElementById('login-overlay').classList.remove('hidden');
+        document.getElementById('login-pin').value = '';
+        document.getElementById('login-pin').focus();
+      }
+    }
+
+    function initializeApp() {
       document.getElementById('prod-date').value = new Date().toISOString().slice(0, 10);
       const urlInput = document.getElementById('gas-url-input');
       
@@ -515,10 +595,15 @@
       } else {
         renderAll();
       }
+    }
 
-      // Auto-Sync ตรวจสอบข้อมูลจาก Google Sheets อัตโนมัติทุกๆ 30 วินาที
+    window.addEventListener('DOMContentLoaded', () => {
+      checkLoginStatus();
+
+      // Auto-Sync ตรวจสอบข้อมูลจาก Google Sheets อัตโนมัติทุกๆ 30 วินาที (เฉพาะเมื่อล็อกอินแล้ว)
       setInterval(() => {
-        if (SCRIPT_URL && !isFetchingFromCloud) {
+        const isAuth = sessionStorage.getItem('optical_pos_auth') === 'true';
+        if (isAuth && SCRIPT_URL && !isFetchingFromCloud) {
           loadFromGoogleSheets(false);
         }
       }, 30000);
@@ -539,22 +624,19 @@
       renderAll();
     }
 
-    // ฟังก์ชันแปลงวันที่ที่เสถียร รองรับทั้ง พ.ศ. / ค.ศ. / YYYY-MM-DD / DD/MM/YYYY
     function parseCustomDate(dateStr) {
       if (!dateStr) return null;
       if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
       
       const str = String(dateStr).trim();
       
-      // กรณีเป็นรูปแบบ ISO: YYYY-MM-DD หรือ YYYY-MM-DDTHH:mm:ss
       if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
         const parts = str.slice(0, 10).split('-');
         let year = parseInt(parts[0], 10);
-        if (year > 2400) year -= 543; // แปลง พ.ศ. เป็น ค.ศ.
+        if (year > 2400) year -= 543;
         return new Date(year, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
       }
       
-      // กรณีเป็นรูปแบบ วัน/เดือน/ปี เช่น DD/MM/YYYY
       const parts = str.split(/[\/\s,.:T-]+/);
       if (parts.length >= 3) {
         let p0 = parseInt(parts[0], 10);
@@ -606,7 +688,6 @@
       }
 
       try {
-        // ใช้ Query Parameter _t เพื่อป้องกัน Cache โดยไม่ส่ง Custom Headers (ไม่เกิด CORS preflight)
         const cacheBusterUrl = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
         const res = await fetch(cacheBusterUrl);
         const data = await res.json();
@@ -670,7 +751,6 @@
     // Render Dashboard & Charts
     // ==========================================
     function renderDashboard() {
-      // 1. คำนวณสรุปต้นทุนสต๊อกตามแบรนด์
       const brandStats = {};
       let totalStockCost = 0;
       let totalStockRetail = 0;
@@ -694,7 +774,6 @@
         brandStats[brand].qty += qty;
       });
 
-      // 2. คำนวณยอดขายจริงสะสมแยกตามแบรนด์
       const brandSalesStats = {};
       let totalBrandSalesRevenue = 0;
 
@@ -729,7 +808,6 @@
         }
       });
 
-      // 3. ยอดขายและกำไรสะสมทั้งหมด
       let totalSales = 0;
       let totalRealizedProfit = 0;
       sales.forEach(s => {
@@ -747,7 +825,6 @@
       const margin = totalSales > 0 ? ((totalRealizedProfit / totalSales) * 100).toFixed(1) : 0;
       document.getElementById('dash-profit-margin').textContent = `อัตรากำไรเฉลี่ย: ${margin}%`;
 
-      // แสดงกราฟและตารางทั้งหมด
       initYearSelectorAndBarChart();
       renderBrandCharts(brandStats, totalStockCost, brandSalesStats, totalBrandSalesRevenue);
       renderPeriodSales();
@@ -755,7 +832,6 @@
       renderOldStock();
     }
 
-    // กราฟแท่งเปรียบเทียบยอดขาย & กำไรรายเดือน
     function initYearSelectorAndBarChart() {
       const yearSelect = document.getElementById('bar-chart-year');
       const currentSelected = yearSelect.value;
@@ -885,9 +961,7 @@
       });
     }
 
-    // กราฟวงกลม: สัดส่วนต้นทุน (ซ้าย) & สัดส่วนยอดขายจริง (ขวา)
     function renderBrandCharts(brandStats, totalCost, brandSalesStats, totalSalesRev) {
-      // 1. ตารางและกราฟสัดส่วนต้นทุนสต๊อกคงเหลือ
       const brandsCostArray = Object.values(brandStats);
       const labelsCost = brandsCostArray.map(b => b.brand);
       const costData = brandsCostArray.map(b => b.costVal);
@@ -937,7 +1011,6 @@
         }
       });
 
-      // 2. ตารางและกราฟสัดส่วนยอดขายจริงตามแบรนด์
       const brandsSalesArray = Object.values(brandSalesStats);
       const labelsSales = brandsSalesArray.map(b => b.brand);
       const salesData = brandsSalesArray.map(b => b.revenue);
@@ -1427,7 +1500,6 @@
       document.getElementById('prod-price').value = p.price;
       document.getElementById('prod-qty').value = p.qty;
       
-      // ป้องกันข้อผิดพลาด format วันที่
       let validDate = new Date().toISOString().slice(0, 10);
       if (p.addedDate && /^\d{4}-\d{2}-\d{2}/.test(String(p.addedDate))) {
         validDate = String(p.addedDate).slice(0, 10);
