@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BEINTER POS V6 - ระบบบริหารร้านแว่นตา</title>
+  <title>BEINTER POS V5.2 - ระบบบริหารร้านแว่นตา</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js สำหรับวาดแผนภูมิวงกลมและกราฟแท่ง -->
@@ -26,7 +26,7 @@
       <div class="flex items-center space-x-3">
         <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-lg shadow-sm">👓</div>
         <div>
-          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BEINTER POS V6</h1>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BEINTER POS V5.2</h1>
           <p class="text-xs text-slate-500">ระบบบริหารสต๊อก วิเคราะห์ต้นทุน และงานขายหน้าร้าน</p>
         </div>
       </div>
@@ -529,18 +529,44 @@
       renderAll();
     }
 
+// ฟังก์ชันแปลงวันที่ให้รองรับทั้ง YYYY-MM-DD, DD/MM/YYYY, พ.ศ. และ ค.ศ.
     function parseCustomDate(dateStr) {
-      if (!dateStr) return new Date();
-      if (dateStr instanceof Date) return dateStr;
-      const d = new Date(dateStr);
-      if (!isNaN(d.getTime())) return d;
-      const parts = String(dateStr).split(/[\/\s,:]+/);
-      if (parts.length >= 3) {
-        let year = parseInt(parts[2]);
-        if (year > 2400) year -= 543;
-        return new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]));
+      if (!dateStr) return null;
+      if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
+      
+      const str = String(dateStr).trim();
+      
+      // 1. กรณีเป็นรูปแบบ ISO: YYYY-MM-DD หรือ YYYY-MM-DDTHH:mm:ss
+      if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        const parts = str.slice(0, 10).split('-');
+        let year = parseInt(parts[0], 10);
+        if (year > 2400) year -= 543; // แปลง พ.ศ. เป็น ค.ศ.
+        return new Date(year, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
       }
-      return new Date();
+      
+      // 2. กรณีเป็นรูปแบบ วัน/เดือน/ปี เช่น DD/MM/YYYY หรือ DD/MM/BBBB (2569)
+      const parts = str.split(/[\/\s,.:T-]+/);
+      if (parts.length >= 3) {
+        let p0 = parseInt(parts[0], 10);
+        let p1 = parseInt(parts[1], 10);
+        let p2 = parseInt(parts[2], 10);
+        
+        let year, month, day;
+        if (p0 > 1000) { 
+          // กรณีขึ้นต้นด้วยปี YYYY/MM/DD
+          year = p0; month = p1 - 1; day = p2;
+        } else { 
+          // กรณีขึ้นต้นด้วยวัน DD/MM/YYYY
+          day = p0; month = p1 - 1; year = p2;
+        }
+        
+        if (year > 2400) year -= 543; // แปลงปี พ.ศ. ให้เป็น ค.ศ. สากล
+        const d = new Date(year, month, day);
+        if (!isNaN(d.getTime())) return d;
+      }
+      
+      const fallback = new Date(str);
+      return isNaN(fallback.getTime()) ? null : fallback;
     }
 
     // ==========================================
