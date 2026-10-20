@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BEINTER POS V5 - ระบบบริหารร้านแว่นตา</title>
+  <title>Optical POS & Smart Dashboard - ระบบบริหารร้านแว่นตา</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js สำหรับวาดแผนภูมิวงกลมและกราฟแท่ง -->
@@ -26,7 +26,7 @@
       <div class="flex items-center space-x-3">
         <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-lg shadow-sm">👓</div>
         <div>
-          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BEINTER POS V5</h1>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Optical Store Manager</h1>
           <p class="text-xs text-slate-500">ระบบบริหารสต๊อก วิเคราะห์ต้นทุน และงานขายหน้าร้าน</p>
         </div>
       </div>
@@ -56,13 +56,11 @@
       <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
         <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 lg:w-72 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
         <button onclick="saveGasUrl()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">บันทึก URL</button>
-        <button onclick="loadFromGoogleSheets()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-medium rounded-lg transition">🔄 รีเฟรชชีต</button>
+        <button onclick="loadFromGoogleSheets(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-medium rounded-lg transition">🔄 รีเฟรชชีต</button>
       </div>
     </div>
 
-    <!-- ========================================== -->
     <!-- 1. DASHBOARD VIEW -->
-    <!-- ========================================== -->
     <section id="view-dashboard" class="space-y-6">
 
       <!-- ตัวเลขสรุปภาพรวม 4 กล่องบน -->
@@ -89,7 +87,7 @@
         </div>
       </div>
 
-      <!-- ส่วนใหม่: กราฟแท่ง (Bar Chart) แสดงแนวโน้มยอดขายและกำไรเปรียบเทียบรายเดือนตลอดทั้งปี -->
+      <!-- กราฟแท่ง (Bar Chart) เปรียบเทียบยอดขาย & กำไรรายเดือน -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
           <div>
@@ -109,7 +107,7 @@
         </div>
       </div>
 
-      <!-- 1) แผนภูมิวงกลมสัดส่วนมูลค่าสต๊อกแบ่งตามแบรนด์ (ต้นทุน vs ราคาขาย) -->
+      <!-- แผนภูมิวงกลมสัดส่วนมูลค่าสต๊อกแบ่งตามแบรนด์ (ต้นทุน vs ราคาขาย) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- กราฟต้นทุนสต๊อก -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
@@ -172,7 +170,7 @@
         </div>
       </div>
 
-      <!-- 2) รายการแสดงยอดขาย (รายวัน, รายสัปดาห์, รายเดือน, รายปี) -->
+      <!-- รายการแสดงยอดขาย (รายวัน, รายสัปดาห์, รายเดือน, รายปี) -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
           <div>
@@ -222,10 +220,10 @@
         </div>
       </div>
 
-      <!-- 3 & 4) สินค้าขายดี 15 อันดับ & สินค้าค้างสต็อกนานที่สุด 15 อันดับ -->
+      <!-- สินค้าขายดี 15 อันดับ & สินค้าค้างสต็อกนานที่สุด 15 อันดับ -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- 3) สินค้าขายดี 15 อันดับ -->
+        <!-- สินค้าขายดี 15 อันดับ -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
             <div>
@@ -257,7 +255,7 @@
           </div>
         </div>
 
-        <!-- 4) สินค้าค้างสต็อกนานที่สุด 15 อันดับ -->
+        <!-- สินค้าค้างสต็อกนานที่สุด 15 อันดับ -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <div class="border-b pb-3">
             <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
@@ -286,9 +284,7 @@
 
     </section>
 
-    <!-- ========================================== -->
-    <!-- 2. POS VIEW (หน้าเปิดบิลขาย) -->
-    <!-- ========================================== -->
+    <!-- 2. POS VIEW -->
     <section id="view-pos" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex flex-col sm:flex-row gap-3 justify-between items-center">
@@ -328,9 +324,7 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 3. INVENTORY VIEW (จัดการสต๊อกสินค้า) -->
-    <!-- ========================================== -->
+    <!-- 3. INVENTORY VIEW -->
     <section id="view-inventory" class="hidden space-y-6">
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
         <div class="flex justify-between items-center mb-4">
@@ -428,9 +422,7 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 4. SALES HISTORY VIEW (ประวัติการขาย) -->
-    <!-- ========================================== -->
+    <!-- 4. SALES HISTORY VIEW -->
     <section id="view-history" class="hidden bg-white p-5 rounded-xl shadow-sm border border-slate-200">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-base font-bold text-slate-800">ประวัติการเปิดบิลขายและกำไรย้อนหลัง</h2>
@@ -456,7 +448,7 @@
   </main>
 
   <script>
-    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwxE_0xbCxKdoZSVJ488hItPqY8y-guw5DFOdNhUt99I2RdINiVWdwkranbclEbxK-L/exec';
+     const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwxE_0xbCxKdoZSVJ488hItPqY8y-guw5DFOdNhUt99I2RdINiVWdwkranbclEbxK-L/exec';
 
     const defaultProducts = [
       { id: 1, sku: 'TM-101', brand: 'TONI MORGAN', name: 'Titanium ทรงกลม สีทอง 49-20', category: 'กรอบแว่นสายตา', cost: 850, price: 2290, qty: 8, addedDate: '2026-01-10' },
@@ -471,7 +463,6 @@
       { id: 10, sku: 'ACC-CLEAN', brand: 'ทั่วไป', name: 'น้ำยาเช็ดเลนส์นาโนและผ้าไมโครไฟเบอร์', category: 'อุปกรณ์เสริม', cost: 35, price: 120, qty: 30, addedDate: '2026-08-01' }
     ];
 
-    // ข้อมูลยอดขายตัวอย่างกระจายตลอดทั้งปี เพื่อให้เห็นกราฟแท่งเปรียบเทียบชัดเจน
     const defaultSales = [
       { orderId: 'INV-1001', date: '2026-01-15T10:30:00Z', customer: 'คุณวิชัย', items: 'TM-101 (1), HOYA-160 (1)', totalCost: 1650, totalPrice: 4690, profit: 3040, itemsDetail: [{ sku: 'TM-101', brand: 'TONI MORGAN', name: 'Titanium สีทอง', cost: 850, price: 2290, qty: 1 }, { sku: 'HOYA-160', brand: 'HOYA', name: 'เลนส์ 1.60 BlueControl', cost: 800, price: 2400, qty: 1 }] },
       { orderId: 'INV-1002', date: '2026-02-18T14:20:00Z', customer: 'คุณกนกวรรณ', items: 'TM-102 (1)', totalCost: 720, totalPrice: 1990, profit: 1270, itemsDetail: [{ sku: 'TM-102', brand: 'TONI MORGAN', name: 'Acetate สีกระน้ำตาล', cost: 720, price: 1990, qty: 1 }] },
@@ -492,8 +483,9 @@
 
     let currentSalesPeriod = 'daily';
     let currentTopPeriod = 'month';
+    let isFetchingFromCloud = false;
 
-    // Chart.js Instances
+    // Chart Instances
     let costChartInstance = null;
     let retailChartInstance = null;
     let monthlyBarChartInstance = null;
@@ -506,12 +498,20 @@
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('prod-date').value = new Date().toISOString().slice(0, 10);
       const urlInput = document.getElementById('gas-url-input');
+      
       if (SCRIPT_URL) {
         urlInput.value = SCRIPT_URL;
-        loadFromGoogleSheets();
+        loadFromGoogleSheets(false);
       } else {
         renderAll();
       }
+
+      // ⏱️ Auto-Sync เช็คข้อมูลสดใหม่จาก Google Sheets อัตโนมัติทุกๆ 30 วินาที
+      setInterval(() => {
+        if (SCRIPT_URL && !isFetchingFromCloud) {
+          loadFromGoogleSheets(false);
+        }
+      }, 30000);
     });
 
     function formatCurrency(num) {
@@ -544,7 +544,107 @@
     }
 
     // ==========================================
-    // Render Dashboard
+    // Cloud Sync (พร้อม Cache-Buster & Auto-Sync)
+    // ==========================================
+    function updateSyncStatus(text, subText, dotColorClass) {
+      document.getElementById('sync-status-text').textContent = text;
+      document.getElementById('sync-sub-text').textContent = subText;
+      document.getElementById('sync-status-dot').className = `w-3 h-3 rounded-full inline-block ${dotColorClass}`;
+    }
+
+    function saveGasUrl() {
+      const url = document.getElementById('gas-url-input').value.trim();
+      if (!url.startsWith('https://script.google.com/')) {
+        alert('กรุณาวางลิงก์ Web App URL ที่ถูกต้องจาก Google Apps Script');
+        return;
+      }
+      SCRIPT_URL = url;
+      localStorage.setItem('optical_gas_url', SCRIPT_URL);
+      loadFromGoogleSheets(true);
+    }
+
+    // 🚀 ฟังก์ชันดึงข้อมูลจาก Cloud พร้อมทำลาย Cache ให้ได้ข้อมูลสดใหม่เสมอ
+    async function loadFromGoogleSheets(showNotification = false) {
+      if (!SCRIPT_URL || isFetchingFromCloud) return;
+      isFetchingFromCloud = true;
+
+      if (showNotification) {
+        updateSyncStatus('กำลังดึงข้อมูลสดจาก Google Sheets...', 'กำลังตรวจสอบข้อมูลล่าสุด', 'bg-blue-500 animate-pulse');
+      }
+
+      try {
+        // แปะ timestamp ต่อท้าย URL เพื่อบังคับให้ไม่ใช้แคชเดิม
+        const cacheBusterUrl = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
+        
+        const res = await fetch(cacheBusterUrl, {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache'
+          }
+        });
+
+        const data = await res.json();
+        if (data.status === 'success') {
+          // หากใน Sheet มีการเพิ่มแถวสินค้าใหม่แต่ลืมใส่ ID ให้สร้างให้อัตโนมัติ
+          if (data.products && Array.isArray(data.products)) {
+            products = data.products.map((p, idx) => ({
+              ...p,
+              id: Number(p.id) || (Date.now() + idx)
+            }));
+          }
+
+          if (data.sales && Array.isArray(data.sales)) {
+            sales = data.sales;
+          }
+
+          localStorage.setItem('optical_products', JSON.stringify(products));
+          localStorage.setItem('optical_sales', JSON.stringify(sales));
+          renderAll();
+          updateSyncStatus('เชื่อมต่อ Google Sheets พร้อมใช้งาน', 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString('th-TH') + ' (Auto-sync ทุก 30s)', 'bg-emerald-500');
+        } else {
+          updateSyncStatus('สคริปต์ส่งข้อผิดพลาด', data.message || '', 'bg-red-500');
+        }
+      } catch (err) {
+        updateSyncStatus('ทำงานโหมดออฟไลน์ (Local)', 'ไม่สามารถเชื่อมต่อ Cloud ได้', 'bg-amber-500');
+      } finally {
+        isFetchingFromCloud = false;
+      }
+    }
+
+    // ฟังก์ชันส่งข้อมูลขึ้น Google Sheets
+    async function syncToGoogleSheets() {
+      if (!SCRIPT_URL) return;
+      updateSyncStatus('กำลังบันทึกข้อมูลขึ้น Google Sheets...', 'กำลังซิงก์ข้อมูล', 'bg-blue-500 animate-pulse');
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ products, sales })
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          updateSyncStatus('ซิงก์ข้อมูลกับ Cloud เรียบร้อย', 'บันทึกล่าสุด: ' + new Date().toLocaleTimeString('th-TH'), 'bg-emerald-500');
+        } else {
+          updateSyncStatus('บันทึกขึ้นชีตไม่สำเร็จ', result.message || '', 'bg-red-500');
+        }
+      } catch (err) {
+        updateSyncStatus('บันทึกในเครื่องแล้ว', 'ยังไม่สามารถส่งขึ้น Cloud ได้', 'bg-amber-500');
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('optical_products', JSON.stringify(products));
+      localStorage.setItem('optical_sales', JSON.stringify(sales));
+      renderAll();
+      if (SCRIPT_URL) {
+        syncToGoogleSheets();
+      }
+    }
+
+    // ==========================================
+    // Render Dashboard & Charts
     // ==========================================
     function renderDashboard() {
       const brandStats = {};
@@ -587,25 +687,13 @@
       const margin = totalSales > 0 ? ((totalRealizedProfit / totalSales) * 100).toFixed(1) : 0;
       document.getElementById('dash-profit-margin').textContent = `อัตรากำไรเฉลี่ย: ${margin}%`;
 
-      // 1. วาดกราฟแท่งรายเดือนเปรียบเทียบยอดขาย & กำไร
       initYearSelectorAndBarChart();
-
-      // 2. วาดกราฟวงกลมแยกตามแบรนด์
       renderBrandCharts(brandStats, totalStockCost, totalStockRetail);
-
-      // 3. แสดงยอดขายตามช่วงเวลา
       renderPeriodSales();
-
-      // 4. สินค้าขายดี 15 อันดับ
       renderTopSelling();
-
-      // 5. สินค้าค้างสต็อก 15 อันดับ
       renderOldStock();
     }
 
-    // ==========================================
-    // กราฟแท่ง (Bar Chart) เปรียบเทียบรายเดือน
-    // ==========================================
     function initYearSelectorAndBarChart() {
       const yearSelect = document.getElementById('bar-chart-year');
       const currentSelected = yearSelect.value;
@@ -633,15 +721,9 @@
 
     function renderMonthlyBarChart() {
       const selectedYear = parseInt(document.getElementById('bar-chart-year').value) || new Date().getFullYear();
-      
-      const monthNames = [
-        'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
-        'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
-      ];
-
+      const monthNames = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
       const monthlySales = new Array(12).fill(0);
       const monthlyProfits = new Array(12).fill(0);
-      const monthlyCosts = new Array(12).fill(0);
 
       sales.forEach(s => {
         const d = parseCustomDate(s.date);
@@ -650,7 +732,6 @@
           if (m >= 0 && m < 12) {
             monthlySales[m] += (Number(s.totalPrice) || 0);
             monthlyProfits[m] += (Number(s.profit) || 0);
-            monthlyCosts[m] += (Number(s.totalCost) || 0);
           }
         }
       });
@@ -666,7 +747,7 @@
             {
               label: 'ยอดขายสุทธิ (บาท)',
               data: monthlySales,
-              backgroundColor: '#2563eb', // สีน้ำเงิน Blue 600
+              backgroundColor: '#2563eb',
               borderRadius: 6,
               borderSkipped: false,
               barPercentage: 0.8,
@@ -675,7 +756,7 @@
             {
               label: 'กำไรขั้นต้น (บาท)',
               data: monthlyProfits,
-              backgroundColor: '#10b981', // สีเขียว Emerald 500
+              backgroundColor: '#10b981',
               borderRadius: 6,
               borderSkipped: false,
               barPercentage: 0.8,
@@ -742,7 +823,6 @@
       });
     }
 
-    // กราฟโดนัทแบรนด์
     function renderBrandCharts(brandStats, totalCost, totalRetail) {
       const brandsArray = Object.values(brandStats);
       const labels = brandsArray.map(b => b.brand);
@@ -1178,7 +1258,7 @@
       document.getElementById('pos-customer').value = '';
       document.getElementById('pos-discount').value = 0;
       saveData();
-      alert('เปิดบิลขายสำเร็จ! ระบบตัดสต๊อกและอัปเดตข้อมูลขึ้นกราฟ Dashboard ทันที');
+      alert('เปิดบิลขายสำเร็จ! ระบบตัดสต๊อกและอัปเดตข้อมูลขึ้น Google Sheets ทันที');
     }
 
     // ==========================================
@@ -1317,87 +1397,8 @@
     }
 
     // ==========================================
-    // Sync & Backup Functions
+    // JSON Backup / Restore
     // ==========================================
-    function saveData() {
-      localStorage.setItem('optical_products', JSON.stringify(products));
-      localStorage.setItem('optical_sales', JSON.stringify(sales));
-      renderAll();
-      if (SCRIPT_URL) {
-        syncToGoogleSheets();
-      }
-    }
-
-    function updateSyncStatus(text, subText, dotColorClass) {
-      document.getElementById('sync-status-text').textContent = text;
-      document.getElementById('sync-sub-text').textContent = subText;
-      document.getElementById('sync-status-dot').className = `w-3 h-3 rounded-full inline-block ${dotColorClass}`;
-    }
-
-    function saveGasUrl() {
-      const url = document.getElementById('gas-url-input').value.trim();
-      if (!url.startsWith('https://script.google.com/')) {
-        alert('กรุณาวางลิงก์ Web App URL ที่ถูกต้องจาก Google Apps Script');
-        return;
-      }
-      SCRIPT_URL = url;
-      localStorage.setItem('optical_gas_url', SCRIPT_URL);
-      loadFromGoogleSheets();
-    }
-
-   // ดึงข้อมูลจาก Google Sheets (แก้ปัญหาติดแคช)
-async function loadFromGoogleSheets() {
-  if (!SCRIPT_URL) return;
-  updateSyncStatus('กำลังดึงข้อมูลจาก Google Sheets...', 'กรุณารอสักครู่', 'bg-blue-500 animate-pulse');
-  try {
-    // เติม ?t=Date.now() เพื่อบังคับให้ดึงข้อมูลใหม่เสมอ ไม่จำแคชเดิม
-    const cleanUrl = SCRIPT_URL.split('?')[0];
-    const fetchUrl = `${cleanUrl}?t=${Date.now()}`;
-
-    const res = await fetch(fetchUrl, {
-      method: 'GET',
-      cache: 'no-store' // สั่งเบราว์เซอร์ไม่ให้บันทึกหรือดึงจากแคช
-    });
-    
-    const data = await res.json();
-    if (data.status === 'success') {
-      if (data.products && data.products.length > 0) {
-        products = data.products;
-      }
-      if (data.sales && data.sales.length > 0) {
-        sales = data.sales;
-      }
-      localStorage.setItem('optical_products', JSON.stringify(products));
-      localStorage.setItem('optical_sales', JSON.stringify(sales));
-      renderAll();
-      updateSyncStatus('เชื่อมต่อ Google Sheets สำเร็จ', 'อัปเดตล่าสุดเมื่อ ' + new Date().toLocaleTimeString('th-TH'), 'bg-emerald-500');
-    }
-  } catch (err) {
-    updateSyncStatus('ทำงานโหมดออฟไลน์ (Local)', 'ไม่สามารถเชื่อมต่อ Cloud ได้', 'bg-amber-500');
-    renderAll();
-  }
-}
-
-    async function syncToGoogleSheets() {
-      if (!SCRIPT_URL) return;
-      updateSyncStatus('กำลังบันทึกข้อมูลขึ้นชีต...', 'กำลังอัปเดตข้อมูล', 'bg-blue-500 animate-pulse');
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ products, sales })
-        });
-        const result = await res.json();
-        if (result.status === 'success') {
-          updateSyncStatus('ซิงก์ข้อมูลกับ Cloud เรียบร้อย', 'บันทึกล่าสุดเมื่อ ' + new Date().toLocaleTimeString('th-TH'), 'bg-emerald-500');
-        } else {
-          updateSyncStatus('บันทึกขึ้นชีตไม่สำเร็จ', result.message || '', 'bg-red-500');
-        }
-      } catch (err) {
-        updateSyncStatus('บันทึกในเครื่องแล้ว', 'ยังไม่สามารถส่งขึ้น Cloud ได้', 'bg-amber-500');
-      }
-    }
-
     function exportData() {
       const dataStr = JSON.stringify({ products, sales }, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
