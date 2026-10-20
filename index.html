@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BEINTER POS V5.3</title>
+  <title>BEINTER POS V7</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js สำหรับวาดแผนภูมิวงกลมและกราฟแท่ง -->
@@ -26,7 +26,7 @@
       <div class="flex items-center space-x-3">
         <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-lg shadow-sm">👓</div>
         <div>
-          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BEINTER POS V5.3</h1>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">BEINTER POS V7</h1>
           <p class="text-xs text-slate-500">ระบบบริหารสต๊อก วิเคราะห์ต้นทุน และงานขายหน้าร้าน</p>
         </div>
       </div>
@@ -60,7 +60,9 @@
       </div>
     </div>
 
+    <!-- ========================================== -->
     <!-- 1. DASHBOARD VIEW -->
+    <!-- ========================================== -->
     <section id="view-dashboard" class="space-y-6">
 
       <!-- ตัวเลขสรุปภาพรวม 4 กล่องบน -->
@@ -87,7 +89,7 @@
         </div>
       </div>
 
-      <!-- กราฟแท่ง (Bar Chart) เปรียบเทียบยอดขาย & กำไรรายเดือน -->
+      <!-- กราฟแท่ง (Bar Chart) เปรียบเทียบยอดขาย & กำไรรายเดือนตลอดทั้งปี -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
           <div>
@@ -107,9 +109,10 @@
         </div>
       </div>
 
-      <!-- แผนภูมิวงกลมสัดส่วนมูลค่าสต๊อกแบ่งตามแบรนด์ (ต้นทุน vs ราคาขาย) -->
+      <!-- แผนภูมิวงกลมคู่: สัดส่วนต้นทุนสต็อก (ซ้าย) vs สัดส่วนยอดขายจริง (ขวา) ตามแบรนด์ -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- กราฟต้นทุนสต๊อก -->
+        
+        <!-- 1) กราฟสัดส่วนต้นทุนสต๊อกตามแบรนด์ -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
@@ -139,19 +142,19 @@
           </div>
         </div>
 
-        <!-- กราฟราคาขายสต๊อก -->
+        <!-- 2) กราฟสัดส่วนยอดขายจริงตามแบรนด์ (ปรับปรุงใหม่ตามที่ต้องการ) -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                สัดส่วนมูลค่าสต็อกตามราคาขาย (ตามแบรนด์)
+                สัดส่วนยอดขายจริง (ตามแบรนด์)
               </h3>
-              <span class="text-xs text-slate-500 font-medium">ราคาป้าย × จำนวน</span>
+              <span class="text-xs text-slate-500 font-medium">ยอดขายจริงสะสม</span>
             </div>
-            <p class="text-xs text-slate-400 mb-4">แสดงเปอร์เซ็นต์และมูลค่าที่คาดว่าจะขายได้ทั้งหมดตามแบรนด์</p>
+            <p class="text-xs text-slate-400 mb-4">แสดงเปอร์เซ็นต์และมูลค่ายอดขายจริงสะสมแยกตามแบรนด์สินค้า</p>
             <div class="relative h-64 sm:h-72 w-full flex items-center justify-center">
-              <canvas id="chart-retail-brand"></canvas>
+              <canvas id="chart-sales-brand"></canvas>
             </div>
           </div>
           <div class="mt-4 border-t pt-3 max-h-48 overflow-y-auto">
@@ -159,15 +162,16 @@
               <thead class="text-slate-500 border-b">
                 <tr>
                   <th class="py-1.5">แบรนด์</th>
-                  <th class="py-1.5 text-right">จำนวนคงเหลือ</th>
-                  <th class="py-1.5 text-right">มูลค่าราคาขาย</th>
+                  <th class="py-1.5 text-right">จำนวนขาย (ชิ้น)</th>
+                  <th class="py-1.5 text-right">ยอดขายรวม</th>
                   <th class="py-1.5 text-right">สัดส่วน (%)</th>
                 </tr>
               </thead>
-              <tbody id="tbody-brand-retail" class="divide-y divide-slate-100"></tbody>
+              <tbody id="tbody-brand-sales" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
+
       </div>
 
       <!-- รายการแสดงยอดขาย (รายวัน, รายสัปดาห์, รายเดือน, รายปี) -->
@@ -284,7 +288,9 @@
 
     </section>
 
-    <!-- 2. POS VIEW -->
+    <!-- ========================================== -->
+    <!-- 2. POS VIEW (หน้าเปิดบิลขาย) -->
+    <!-- ========================================== -->
     <section id="view-pos" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
         <div class="flex flex-col sm:flex-row gap-3 justify-between items-center">
@@ -324,7 +330,9 @@
       </div>
     </section>
 
-    <!-- 3. INVENTORY VIEW -->
+    <!-- ========================================== -->
+    <!-- 3. INVENTORY VIEW (จัดการสต๊อกสินค้า) -->
+    <!-- ========================================== -->
     <section id="view-inventory" class="hidden space-y-6">
       <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
         <div class="flex justify-between items-center mb-4">
@@ -422,7 +430,9 @@
       </div>
     </section>
 
-    <!-- 4. SALES HISTORY VIEW -->
+    <!-- ========================================== -->
+    <!-- 4. SALES HISTORY VIEW (ประวัติการขาย) -->
+    <!-- ========================================== -->
     <section id="view-history" class="hidden bg-white p-5 rounded-xl shadow-sm border border-slate-200">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-base font-bold text-slate-800">ประวัติการเปิดบิลขายและกำไรย้อนหลัง</h2>
@@ -485,9 +495,9 @@
     let currentTopPeriod = 'month';
     let isFetchingFromCloud = false;
 
-    // Chart Instances
+    // Chart.js Instances
     let costChartInstance = null;
-    let retailChartInstance = null;
+    let salesBrandChartInstance = null;
     let monthlyBarChartInstance = null;
 
     const chartPalette = [
@@ -506,7 +516,7 @@
         renderAll();
       }
 
-      // ⏱️ Auto-Sync เช็คข้อมูลสดใหม่จาก Google Sheets อัตโนมัติทุกๆ 30 วินาที
+      // Auto-Sync ตรวจสอบข้อมูลจาก Google Sheets อัตโนมัติทุกๆ 30 วินาที
       setInterval(() => {
         if (SCRIPT_URL && !isFetchingFromCloud) {
           loadFromGoogleSheets(false);
@@ -529,14 +539,14 @@
       renderAll();
     }
 
-// ฟังก์ชันแปลงวันที่ให้รองรับทั้ง YYYY-MM-DD, DD/MM/YYYY, พ.ศ. และ ค.ศ.
+    // ฟังก์ชันแปลงวันที่ที่เสถียร รองรับทั้ง พ.ศ. / ค.ศ. / YYYY-MM-DD / DD/MM/YYYY
     function parseCustomDate(dateStr) {
       if (!dateStr) return null;
       if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
       
       const str = String(dateStr).trim();
       
-      // 1. กรณีเป็นรูปแบบ ISO: YYYY-MM-DD หรือ YYYY-MM-DDTHH:mm:ss
+      // กรณีเป็นรูปแบบ ISO: YYYY-MM-DD หรือ YYYY-MM-DDTHH:mm:ss
       if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
         const parts = str.slice(0, 10).split('-');
         let year = parseInt(parts[0], 10);
@@ -544,7 +554,7 @@
         return new Date(year, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
       }
       
-      // 2. กรณีเป็นรูปแบบ วัน/เดือน/ปี เช่น DD/MM/YYYY หรือ DD/MM/BBBB (2569)
+      // กรณีเป็นรูปแบบ วัน/เดือน/ปี เช่น DD/MM/YYYY
       const parts = str.split(/[\/\s,.:T-]+/);
       if (parts.length >= 3) {
         let p0 = parseInt(parts[0], 10);
@@ -553,14 +563,12 @@
         
         let year, month, day;
         if (p0 > 1000) { 
-          // กรณีขึ้นต้นด้วยปี YYYY/MM/DD
           year = p0; month = p1 - 1; day = p2;
         } else { 
-          // กรณีขึ้นต้นด้วยวัน DD/MM/YYYY
           day = p0; month = p1 - 1; year = p2;
         }
         
-        if (year > 2400) year -= 543; // แปลงปี พ.ศ. ให้เป็น ค.ศ. สากล
+        if (year > 2400) year -= 543;
         const d = new Date(year, month, day);
         if (!isNaN(d.getTime())) return d;
       }
@@ -570,7 +578,7 @@
     }
 
     // ==========================================
-    // Cloud Sync (พร้อม Cache-Buster & Auto-Sync)
+    // Cloud Sync (CORS Safe & Cache Buster)
     // ==========================================
     function updateSyncStatus(text, subText, dotColorClass) {
       document.getElementById('sync-status-text').textContent = text;
@@ -589,7 +597,6 @@
       loadFromGoogleSheets(true);
     }
 
- // 🚀 ฟังก์ชันดึงข้อมูลจาก Cloud (ตัด Headers ที่ทำให้เกิด Preflight ออก)
     async function loadFromGoogleSheets(showNotification = false) {
       if (!SCRIPT_URL || isFetchingFromCloud) return;
       isFetchingFromCloud = true;
@@ -599,12 +606,11 @@
       }
 
       try {
-        // ใช้ Query Parameter _t เพื่อป้องกันแคช โดยไม่ต้องส่ง Custom Headers
+        // ใช้ Query Parameter _t เพื่อป้องกัน Cache โดยไม่ส่ง Custom Headers (ไม่เกิด CORS preflight)
         const cacheBusterUrl = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
-        
         const res = await fetch(cacheBusterUrl);
-
         const data = await res.json();
+        
         if (data.status === 'success') {
           if (data.products && Array.isArray(data.products)) {
             products = data.products.map((p, idx) => ({
@@ -631,7 +637,6 @@
       }
     }
 
-    // ฟังก์ชันส่งข้อมูลขึ้น Google Sheets
     async function syncToGoogleSheets() {
       if (!SCRIPT_URL) return;
       updateSyncStatus('กำลังบันทึกข้อมูลขึ้น Google Sheets...', 'กำลังซิงก์ข้อมูล', 'bg-blue-500 animate-pulse');
@@ -665,6 +670,7 @@
     // Render Dashboard & Charts
     // ==========================================
     function renderDashboard() {
+      // 1. คำนวณสรุปต้นทุนสต๊อกตามแบรนด์
       const brandStats = {};
       let totalStockCost = 0;
       let totalStockRetail = 0;
@@ -688,6 +694,42 @@
         brandStats[brand].qty += qty;
       });
 
+      // 2. คำนวณยอดขายจริงสะสมแยกตามแบรนด์
+      const brandSalesStats = {};
+      let totalBrandSalesRevenue = 0;
+
+      sales.forEach(s => {
+        if (s.itemsDetail && Array.isArray(s.itemsDetail) && s.itemsDetail.length > 0) {
+          s.itemsDetail.forEach(item => {
+            const b = (item.brand || 'ทั่วไป').trim();
+            const rev = (Number(item.price) || 0) * (Number(item.qty) || 1);
+            const q = Number(item.qty) || 1;
+            if (!brandSalesStats[b]) brandSalesStats[b] = { brand: b, revenue: 0, qty: 0 };
+            brandSalesStats[b].revenue += rev;
+            brandSalesStats[b].qty += q;
+            totalBrandSalesRevenue += rev;
+          });
+        } else if (s.items) {
+          const parts = s.items.split(',');
+          parts.forEach(pStr => {
+            const match = pStr.trim().match(/^(.+?)\s*\((\d+)\)$/);
+            if (match) {
+              const sku = match[1].trim();
+              const q = parseInt(match[2]) || 1;
+              const prod = products.find(p => p.sku === sku);
+              const b = (prod ? prod.brand : 'ทั่วไป').trim();
+              const price = prod ? prod.price : 0;
+              const rev = price * q;
+              if (!brandSalesStats[b]) brandSalesStats[b] = { brand: b, revenue: 0, qty: 0 };
+              brandSalesStats[b].revenue += rev;
+              brandSalesStats[b].qty += q;
+              totalBrandSalesRevenue += rev;
+            }
+          });
+        }
+      });
+
+      // 3. ยอดขายและกำไรสะสมทั้งหมด
       let totalSales = 0;
       let totalRealizedProfit = 0;
       sales.forEach(s => {
@@ -705,13 +747,15 @@
       const margin = totalSales > 0 ? ((totalRealizedProfit / totalSales) * 100).toFixed(1) : 0;
       document.getElementById('dash-profit-margin').textContent = `อัตรากำไรเฉลี่ย: ${margin}%`;
 
+      // แสดงกราฟและตารางทั้งหมด
       initYearSelectorAndBarChart();
-      renderBrandCharts(brandStats, totalStockCost, totalStockRetail);
+      renderBrandCharts(brandStats, totalStockCost, brandSalesStats, totalBrandSalesRevenue);
       renderPeriodSales();
       renderTopSelling();
       renderOldStock();
     }
 
+    // กราฟแท่งเปรียบเทียบยอดขาย & กำไรรายเดือน
     function initYearSelectorAndBarChart() {
       const yearSelect = document.getElementById('bar-chart-year');
       const currentSelected = yearSelect.value;
@@ -721,8 +765,8 @@
       yearsSet.add(currentYear);
 
       sales.forEach(s => {
-        const y = parseCustomDate(s.date).getFullYear();
-        if (!isNaN(y)) yearsSet.add(y);
+        const d = parseCustomDate(s.date);
+        if (d && !isNaN(d.getFullYear())) yearsSet.add(d.getFullYear());
       });
 
       const sortedYears = Array.from(yearsSet).sort((a,b) => b - a);
@@ -745,7 +789,7 @@
 
       sales.forEach(s => {
         const d = parseCustomDate(s.date);
-        if (d.getFullYear() === selectedYear) {
+        if (d && d.getFullYear() === selectedYear) {
           const m = d.getMonth();
           if (m >= 0 && m < 12) {
             monthlySales[m] += (Number(s.totalPrice) || 0);
@@ -841,14 +885,15 @@
       });
     }
 
-    function renderBrandCharts(brandStats, totalCost, totalRetail) {
-      const brandsArray = Object.values(brandStats);
-      const labels = brandsArray.map(b => b.brand);
-      const costData = brandsArray.map(b => b.costVal);
-      const retailData = brandsArray.map(b => b.retailVal);
+    // กราฟวงกลม: สัดส่วนต้นทุน (ซ้าย) & สัดส่วนยอดขายจริง (ขวา)
+    function renderBrandCharts(brandStats, totalCost, brandSalesStats, totalSalesRev) {
+      // 1. ตารางและกราฟสัดส่วนต้นทุนสต๊อกคงเหลือ
+      const brandsCostArray = Object.values(brandStats);
+      const labelsCost = brandsCostArray.map(b => b.brand);
+      const costData = brandsCostArray.map(b => b.costVal);
 
       const tbodyCost = document.getElementById('tbody-brand-cost');
-      tbodyCost.innerHTML = brandsArray.sort((a,b) => b.costVal - a.costVal).map(b => {
+      tbodyCost.innerHTML = brandsCostArray.sort((a,b) => b.costVal - a.costVal).map(b => {
         const pct = totalCost > 0 ? ((b.costVal / totalCost) * 100).toFixed(1) : 0;
         return `
           <tr>
@@ -860,28 +905,15 @@
         `;
       }).join('');
 
-      const tbodyRetail = document.getElementById('tbody-brand-retail');
-      tbodyRetail.innerHTML = brandsArray.sort((a,b) => b.retailVal - a.retailVal).map(b => {
-        const pct = totalRetail > 0 ? ((b.retailVal / totalRetail) * 100).toFixed(1) : 0;
-        return `
-          <tr>
-            <td class="py-1.5 font-medium text-slate-800">${b.brand}</td>
-            <td class="py-1.5 text-right text-slate-500">${b.qty} ชิ้น</td>
-            <td class="py-1.5 text-right font-semibold text-emerald-600">${formatCurrency(b.retailVal)}</td>
-            <td class="py-1.5 text-right font-bold text-slate-700">${pct}%</td>
-          </tr>
-        `;
-      }).join('');
-
       const ctxCost = document.getElementById('chart-cost-brand').getContext('2d');
       if (costChartInstance) costChartInstance.destroy();
       costChartInstance = new Chart(ctxCost, {
         type: 'doughnut',
         data: {
-          labels: labels,
+          labels: labelsCost,
           datasets: [{
             data: costData,
-            backgroundColor: chartPalette.slice(0, labels.length),
+            backgroundColor: chartPalette.slice(0, labelsCost.length),
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -905,15 +937,37 @@
         }
       });
 
-      const ctxRetail = document.getElementById('chart-retail-brand').getContext('2d');
-      if (retailChartInstance) retailChartInstance.destroy();
-      retailChartInstance = new Chart(ctxRetail, {
+      // 2. ตารางและกราฟสัดส่วนยอดขายจริงตามแบรนด์
+      const brandsSalesArray = Object.values(brandSalesStats);
+      const labelsSales = brandsSalesArray.map(b => b.brand);
+      const salesData = brandsSalesArray.map(b => b.revenue);
+
+      const tbodySales = document.getElementById('tbody-brand-sales');
+      if (brandsSalesArray.length === 0) {
+        tbodySales.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400">ยังไม่มีประวัติการขาย</td></tr>`;
+      } else {
+        tbodySales.innerHTML = brandsSalesArray.sort((a,b) => b.revenue - a.revenue).map(b => {
+          const pct = totalSalesRev > 0 ? ((b.revenue / totalSalesRev) * 100).toFixed(1) : 0;
+          return `
+            <tr>
+              <td class="py-1.5 font-medium text-slate-800">${b.brand}</td>
+              <td class="py-1.5 text-right text-slate-500">${b.qty} ชิ้น</td>
+              <td class="py-1.5 text-right font-semibold text-emerald-600">${formatCurrency(b.revenue)}</td>
+              <td class="py-1.5 text-right font-bold text-slate-700">${pct}%</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const ctxSales = document.getElementById('chart-sales-brand').getContext('2d');
+      if (salesBrandChartInstance) salesBrandChartInstance.destroy();
+      salesBrandChartInstance = new Chart(ctxSales, {
         type: 'doughnut',
         data: {
-          labels: labels,
+          labels: labelsSales.length > 0 ? labelsSales : ['ยังไม่มียอดขาย'],
           datasets: [{
-            data: retailData,
-            backgroundColor: chartPalette.slice(0, labels.length),
+            data: salesData.length > 0 ? salesData : [1],
+            backgroundColor: salesData.length > 0 ? chartPalette.slice(0, labelsSales.length) : ['#e2e8f0'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -926,8 +980,9 @@
             tooltip: {
               callbacks: {
                 label: function(item) {
+                  if (salesData.length === 0) return ' ยังไม่มียอดขาย';
                   const val = item.raw || 0;
-                  const pct = totalRetail > 0 ? ((val / totalRetail) * 100).toFixed(1) : 0;
+                  const pct = totalSalesRev > 0 ? ((val / totalSalesRev) * 100).toFixed(1) : 0;
                   return ` ${item.label}: ${formatCurrency(val)} (${pct}%)`;
                 }
               }
@@ -955,6 +1010,7 @@
       const now = new Date();
       const filteredSales = sales.filter(s => {
         const sDate = parseCustomDate(s.date);
+        if (!sDate) return false;
         if (currentSalesPeriod === 'daily') {
           return sDate.toDateString() === now.toDateString();
         } else if (currentSalesPeriod === 'weekly') {
@@ -1017,6 +1073,7 @@
       const now = new Date();
       const eligibleSales = sales.filter(s => {
         const sDate = parseCustomDate(s.date);
+        if (!sDate) return false;
         if (currentTopPeriod === 'month') {
           return sDate.getMonth() === now.getMonth() && sDate.getFullYear() === now.getFullYear();
         } else if (currentTopPeriod === 'year') {
@@ -1094,12 +1151,19 @@
 
     function renderOldStock() {
       const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const inStockProducts = products.filter(p => Number(p.qty) > 0);
 
       const mapped = inStockProducts.map(p => {
-        const added = parseCustomDate(p.addedDate || new Date());
-        const diffMs = now - added;
-        const diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        const added = parseCustomDate(p.addedDate);
+        let diffDays = 0;
+        
+        if (added) {
+          const addedDateOnly = new Date(added.getFullYear(), added.getMonth(), added.getDate());
+          const diffMs = today - addedDateOnly;
+          diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        }
+        
         const deadCost = (Number(p.cost) || 0) * (Number(p.qty) || 0);
         return { ...p, daysInStock: diffDays, deadCost };
       });
@@ -1362,7 +1426,17 @@
       document.getElementById('prod-cost').value = p.cost;
       document.getElementById('prod-price').value = p.price;
       document.getElementById('prod-qty').value = p.qty;
-      document.getElementById('prod-date').value = p.addedDate ? p.addedDate.slice(0, 10) : new Date().toISOString().slice(0, 10);
+      
+      // ป้องกันข้อผิดพลาด format วันที่
+      let validDate = new Date().toISOString().slice(0, 10);
+      if (p.addedDate && /^\d{4}-\d{2}-\d{2}/.test(String(p.addedDate))) {
+        validDate = String(p.addedDate).slice(0, 10);
+      } else if (p.addedDate) {
+        const parsed = parseCustomDate(p.addedDate);
+        if (parsed) validDate = parsed.toISOString().slice(0, 10);
+      }
+      document.getElementById('prod-date').value = validDate;
+
       document.getElementById('form-title').textContent = `แก้ไขข้อมูลสินค้า: ${p.sku}`;
       document.getElementById('btn-cancel-edit').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1415,7 +1489,7 @@
     }
 
     // ==========================================
-    // JSON Backup / Restore
+    // Backup & Restore
     // ==========================================
     function exportData() {
       const dataStr = JSON.stringify({ products, sales }, null, 2);
