@@ -1066,14 +1066,23 @@
       `).join('');
     }
 
-    function renderOldStock() {
+  function renderOldStock() {
       const now = new Date();
+      // ตัดเวลาออก ให้เริ่มนับเวลาเที่ยงคืนของวันนี้
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
       const inStockProducts = products.filter(p => Number(p.qty) > 0);
 
       const mapped = inStockProducts.map(p => {
-        const added = parseCustomDate(p.addedDate || new Date());
-        const diffMs = now - added;
-        const diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        const added = parseCustomDate(p.addedDate);
+        let diffDays = 0;
+        
+        if (added) {
+          const addedDateOnly = new Date(added.getFullYear(), added.getMonth(), added.getDate());
+          const diffMs = today - addedDateOnly;
+          diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        }
+        
         const deadCost = (Number(p.cost) || 0) * (Number(p.qty) || 0);
         return { ...p, daysInStock: diffDays, deadCost };
       });
