@@ -563,7 +563,7 @@
       loadFromGoogleSheets(true);
     }
 
-    // 🚀 ฟังก์ชันดึงข้อมูลจาก Cloud พร้อมทำลาย Cache ให้ได้ข้อมูลสดใหม่เสมอ
+   // 🚀 ฟังก์ชันดึงข้อมูลจาก Cloud (ตัด Headers ที่ทำให้เกิด Preflight ออก)
     async function loadFromGoogleSheets(showNotification = false) {
       if (!SCRIPT_URL || isFetchingFromCloud) return;
       isFetchingFromCloud = true;
@@ -573,21 +573,13 @@
       }
 
       try {
-        // แปะ timestamp ต่อท้าย URL เพื่อบังคับให้ไม่ใช้แคชเดิม
+        // ใช้ Query Parameter _t เพื่อป้องกันแคช โดยไม่ต้องส่ง Custom Headers
         const cacheBusterUrl = SCRIPT_URL + (SCRIPT_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
         
-        const res = await fetch(cacheBusterUrl, {
-          method: 'GET',
-          cache: 'no-store',
-          headers: {
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache'
-          }
-        });
+        const res = await fetch(cacheBusterUrl);
 
         const data = await res.json();
         if (data.status === 'success') {
-          // หากใน Sheet มีการเพิ่มแถวสินค้าใหม่แต่ลืมใส่ ID ให้สร้างให้อัตโนมัติ
           if (data.products && Array.isArray(data.products)) {
             products = data.products.map((p, idx) => ({
               ...p,
@@ -612,7 +604,7 @@
         isFetchingFromCloud = false;
       }
     }
-
+   
     // ฟังก์ชันส่งข้อมูลขึ้น Google Sheets
     async function syncToGoogleSheets() {
       if (!SCRIPT_URL) return;
